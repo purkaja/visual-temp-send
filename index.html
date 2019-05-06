@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+	<meta http-equiv="Content-Security-Policy" content="
+		default-src 'self' 'unsafe-inline' 'unsafe-eval' ws://10.3.101.114:3000 http://proto387.haaga-helia.fi/  http://api.openweathermap.org https://mts.googleapis.com https://maps.googleapis.com https://maps.gstatic.com http://code.jquery.com https://code.jquery.com  https://ssl.gstatic.com gap: data: blob: filesystem: ; 
+	" />	
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<script src="https://code.jquery.com/jquery-2.1.4.js" integrity="sha256-siFczlgw4jULnUICcdm9gjQPZkw/YPDqhQ9+nAOScE4="	crossorigin="anonymous"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="css/index.css">
+	<title>Mobiiliohjelmointi</title>	
+</head>
+<body>	
+		
+	<div data-role="page" id="etusivu">
+		<div data-role="header">
+            <h1>visual-temp-send</h1>
+            <center><img width="250"   src="./img/Visual-temp-logo.png" /></center>
+		</div>         
+		<div data-role="main" class="ui-content ui-body-a">
+			<div id="lisaaTiedot"></div>			
+				<form id="lisaaLomake">
+					<label for="nimi">LÄHETTÄJÄ:</label>
+					<select id="henkilo_id" name="henkilo_id"></select>
+					<label for="laite">LAITE:</label>
+                    <select name="laite_id" id="laite_id"></select>
+                    <label for="slider">LÄMPÖTILA:</label>
+                    <input type="range" name="lampotila" id="lampotila" min="-22" max="20" value="6" step="1">
+					<!--<label for="paivays">Päiväys:</label>
+					<input type="text" name="paivays" id="paivays">-->
+					<input type="button" class="ui-btn" id="lisaaUusi" value="LÄHETÄ">
+				</form>					
+			<div id="naytaTiedot">
+				<table data-role="table" id="tiedotTaulu" class="ui-responsive">
+					<thead>
+						<tr>
+							<th>Nimi:</th>
+							<th>Tulos:</th>
+							<th>Päiväys:</th>							
+						</tr>
+					</thead>
+					<tbody>					
+					</tbody>
+				</table>
+			</div>
+		<div data-role="footer">
+			<h1>Higher-Software</h1>
+		</div>
+	</div>		
+	<script>
+				
+		$(document).on("pagecontainershow", function( event, ui ) {	
+			var toPage = ui.toPage[0].id;
+			if(toPage="etusivu"){
+				
+			}			
+		});
+		$(document).on("pagecreate", "#etusivu", function() { 	//Sivun luonti, tehdään kerran
+			$("#paivays").val(haePaiva());
+			haeTiedot();
+		});
+		
+		function haeTiedot(){
+
+            $.getJSON("http://higher.fi//backend/haehenkilot.php", function(result){ //selectBox1 hae kuljettaja_id
+				$.each(result, function(i, field) {					
+					$("#henkilo_id").append("<option>"+field.henkilo_id+"</option>");	
+											
+				});
+			});
+
+            $.getJSON("http://higher.fi//backend/haelaitteet.php", function(result){ //selectBox1 hae kuljettaja_id
+				$.each(result, function(i, field) {					
+					$("#laite_id").append("<option>"+field.laite_id+"</option>");	
+											
+				});
+			});
+			$("#tiedotTaulu tbody").html("");
+			$.getJSON("http://proto387.haaga-helia.fi/~christian.brade/backend/select.php", function(result){
+				$.each(result, function(i, field) {					
+					$("#tiedotTaulu tbody").append("<tr><td>"
+													+field.Nimi
+													+"</td><td>"	
+													+field.Tulos
+													+"</td><td>"
+													+field.Paivays
+													+"</td></tr>");								
+				});
+			});
+		}
+				
+		$("#lisaaUusi").on("tap", function(){
+            console.log("ähä kutti");
+			//if($("#nimi").val().length>0&&$("#tulos").val().length>0){
+                if(1==1)	{			
+				$.ajax({
+					type: 'POST',
+					data: $("#lisaaLomake").serialize(),
+					url: 'http://higher.fi/backend/insertKirjaukset.php',
+					success: function(data){						
+						haeTiedot();						
+					},
+				//	error: function(){						
+				//		haeTiedot();						
+				//	}
+				});				
+			}			
+		});
+		
+		function haePaiva(){
+			var dVal = new Date();
+			var d = dVal.getDate();
+			var m = dVal.getMonth()+1;
+			var y = dVal.getFullYear();
+			if(d<10){
+				d="0"+d;
+			}
+			if(m<10){
+				m="0"+m;
+			}
+			return d+"."+m+"."+y;
+ 		}
+		
+	</script>
+</body>
+
+</html>
