@@ -33,7 +33,11 @@
 					<!--<label for="paivays">Päiväys:</label>
 					<input type="text" name="paivays" id="paivays">-->
 					<input type="button" class="ui-btn" id="lisaaUusi" value="LÄHETÄ">
-				</form>					
+                </form>	
+            <div id="tulosta">
+                    <p id="tulos"></p>
+            </div>
+            <!--				
 			<div id="naytaTiedot">
 				<table data-role="table" id="tiedotTaulu" class="ui-responsive">
 					<thead>
@@ -46,12 +50,13 @@
 					<tbody>					
 					</tbody>
 				</table>
-			</div>
+            </div>
+            -->
 		<div data-role="footer">
 			<h1>Higher-Software</h1>
 		</div>
 	</div>		
-	<script>
+	<script type="text/javascript">
 				
 		$(document).on("pagecontainershow", function( event, ui ) {	
 			var toPage = ui.toPage[0].id;
@@ -66,19 +71,20 @@
 		
 		function haeTiedot(){
 
-            $.getJSON("http://higher.fi//backend/haehenkilot.php", function(result){ //selectBox1 hae kuljettaja_id
+            $.getJSON("http://higher.fi//backend/haehenkilot.php", function(result){ //selectBox1 hae henkilo_id
 				$.each(result, function(i, field) {					
 					$("#henkilo_id").append("<option>"+field.henkilo_id+"</option>");	
 											
 				});
 			});
 
-            $.getJSON("http://higher.fi//backend/haelaitteet.php", function(result){ //selectBox1 hae kuljettaja_id
+            $.getJSON("http://higher.fi//backend/haelaitteet.php", function(result){ //selectBox1 hae laite_id
 				$.each(result, function(i, field) {					
 					$("#laite_id").append("<option>"+field.laite_id+"</option>");	
 											
 				});
 			});
+      
 			$("#tiedotTaulu tbody").html("");
 			$.getJSON("http://proto387.haaga-helia.fi/~christian.brade/backend/select.php", function(result){
 				$.each(result, function(i, field) {					
@@ -92,7 +98,7 @@
 				});
 			});
 		}
-				
+		
 		$("#lisaaUusi").on("tap", function(){
             console.log("ähä kutti");
 			//if($("#nimi").val().length>0&&$("#tulos").val().length>0){
@@ -101,8 +107,10 @@
 					type: 'POST',
 					data: $("#lisaaLomake").serialize(),
 					url: 'http://higher.fi/backend/insertKirjaukset.php',
-					success: function(data){						
-						haeTiedot();						
+					success: function(data){
+                       $("#tulos").html("<h2>tiedot kirjattiin järjestelmään</h2>");						
+						haeTiedot();		
+
 					},
 				//	error: function(){						
 				//		haeTiedot();						
@@ -124,6 +132,7 @@
 			}
 			return d+"."+m+"."+y;
  		}
+        
 		
 	</script>
 </body>
